@@ -1,53 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 
-import useEventListener from "@use-it/event-listener";
-
-import { TILE_SIZE, HEAD_OFSET } from "../../settings/constants";
+import { TILE_SIZE, HEAD_OFFSET, EDirection } from "../../settings/constants";
 
 import "./index.css";
+import useHeroMoviment from "../../hooks/useHeroMoviment";
 
-interface IObjectLiteral {
-  [key: string]: any;
-}
+const initialPosition = {
+  x: 15,
+  y: 15,
+};
 
 const Hero = () => {
-  const [heroPositionX, setHeroPositionX] = useState(8);
-  const [heroPositionY, setHeroPositionY] = useState(3);
-
-  const [headDirection, setHeadDirection] = useState("right");
-
-  useEventListener("keydown", (event: any) => {
-    const keyEvents: IObjectLiteral = {
-      ArrowUp: () => setHeroPositionY(heroPositionY + 1),
-      ArrowDown: () => setHeroPositionY(heroPositionY - 1),
-      ArrowLeft: () => {
-        setHeadDirection("left");
-        setHeroPositionX(heroPositionX - 1);
-      },
-      ArrowRight: () => {
-        setHeadDirection("right");
-        setHeroPositionX(heroPositionX + 1);
-      },
-    };
-
-    if (keyEvents[event.key]) {
-      keyEvents[event.key]();
-    }
-  });
+  const { position, direction } = useHeroMoviment(initialPosition);
 
   return (
     <div
       style={{
         position: "absolute",
-        bottom: TILE_SIZE * heroPositionY,
-        left: TILE_SIZE * heroPositionX,
+        bottom: TILE_SIZE * position.y,
+        left: TILE_SIZE * position.x,
         width: TILE_SIZE,
-        height: TILE_SIZE + HEAD_OFSET,
+        height: TILE_SIZE + HEAD_OFFSET,
         backgroundImage: "url(./assets/HERO.png)",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: `0px -${TILE_SIZE - HEAD_OFSET}px`,
+        backgroundPosition: `0px -${TILE_SIZE - HEAD_OFFSET}px`,
         animation: "hero-animation 1s steps(4) infinite",
-        transform: `scaleX(${headDirection === "right" ? 1 : -1})`,
+        transform: `scaleX(${direction === EDirection.RIGHT ? 1 : -1})`,
+        zIndex: 1,
       }}
     />
   );
