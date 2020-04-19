@@ -1,22 +1,23 @@
-import useInterval from "@use-it/interval";
-import React from "react";
+import useEventListener from "@use-it/event-listener";
+import React, { useState } from "react";
 import { EDirection } from "../../settings/constants";
 import { handleNextPosition } from "../../context/canvas/helpers";
 
-function useEnemyMoviment(initialPosition) {
-  const [positionState, updatePositionState] = React.useState(initialPosition);
-  const [direction, updateDirectionState] = React.useState(EDirection.RIGHT);
+function useHeroMoviment(initialPosition) {
+  const [positionState, updatePositionState] = useState(initialPosition);
+  const [direction, updateDirectionState] = useState(EDirection.RIGHT);
 
-  useInterval(function move() {
-    var random = Math.floor(Math.random() * 4);
-    var directionArray = Object.values(EDirection);
-    const randomDirection = directionArray[random];
+  useEventListener("keydown", (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const direction = event.key as EDirection;
 
-    const nextMoviment = handleNextPosition(randomDirection, positionState);
+    if (direction.indexOf("Arrow") === -1) {
+      return;
+    }
 
-    updateDirectionState(randomDirection);
-    updatePositionState(nextMoviment);
-  }, 2000);
+    const nextPosition = handleNextPosition(direction, positionState);
+    updatePositionState(nextPosition);
+    updateDirectionState(direction);
+  });
 
   return {
     position: positionState,
@@ -24,4 +25,4 @@ function useEnemyMoviment(initialPosition) {
   };
 }
 
-export default useEnemyMoviment;
+export default useHeroMoviment;
