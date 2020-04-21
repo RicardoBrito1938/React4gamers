@@ -1,28 +1,47 @@
 import useEventListener from "@use-it/event-listener";
-import React, { useState } from "react";
-import { EDirection } from "../../settings/constants";
-import { handleNextPosition } from "../../context/canvas/helpers";
+import React, { useState, KeyboardEvent, useContext } from "react";
+import { EDirection, EWalker } from "../../settings/constants";
+import { CanvasContext } from "../../context/canvas";
+import { ChestsContext } from "../../context/chests";
 
 function useHeroMoviment(initialPosition) {
-  const [positionState, updatePositionState] = useState(initialPosition);
-  const [direction, updateDirectionState] = useState(EDirection.RIGHT);
+    const canvasContext = useContext(CanvasContext);
+    const chestsContext = useContext(ChestsContext);
 
-  useEventListener("keydown", (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const direction = event.key as EDirection;
+    const [positionState, updatePositionState] = useState(initialPosition);
+    const [direction, updateDirectionState] = useState(EDirection.RIGHT);
 
-    if (direction.indexOf("Arrow") === -1) {
-      return;
-    }
+    useEventListener("keydown", (event: KeyboardEvent<HTMLDivElement>) => {
+        const direction = event.key as EDirection;
 
-    const nextPosition = handleNextPosition(direction, positionState);
-    updatePositionState(nextPosition);
-    updateDirectionState(direction);
-  });
+        if (direction.indexOf("Arrow") === -1) {
+            return;
+        }
 
-  return {
-    position: positionState,
-    direction: direction,
-  };
+        const { nextMove, nextPosition } = canvasContext.updateCanvas(
+            direction,
+            positionState,
+            EWalker.HERO
+        );
+
+        if (nextMove.valid) {
+            updatePositionState(nextPosition);
+            updateDirectionState(direction);
+        }
+
+        if (nextMove.dead) {
+            alert("Voce morreu");
+        }
+
+        if (nextMove.chest) {
+            chestsContext.updateOpenedChests();
+        }
+    });
+
+    return {
+        position: positionState,
+        direction: direction,
+    };
 }
 
 export default useHeroMoviment;

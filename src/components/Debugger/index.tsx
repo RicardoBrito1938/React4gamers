@@ -1,25 +1,31 @@
-import React from "react";
+import React, { useContext } from "react";
 import Tile from "./Tile";
-import { canvas } from "../../context/canvas/helpers";
+import { CanvasContext } from "../../context/canvas";
 
-function getCanvasMap() {
-  const tileArray = [];
-  for (let y = 0; y < canvas.length; y++) {
-    const canvasY = canvas[y];
+function getCanvasMap(canvas) {
+    const tileArray = [];
 
-    for (let x = 0; x < canvasY.length; x++) {
-      const canvasYX = canvasY[x];
+    for (let y = 0; y < canvas.length; y++) {
+        const canvasY = canvas[y];
 
-      const position = { x: x, y: y };
-      const tile = canvas[y][x] || canvasYX;
+        for (let x = 0; x < canvasY.length; x++) {
+            const canvasYX = canvasY[x];
 
-      tileArray.push(<Tile position={position} text={tile} />);
+            const position = { x: x, y: y };
+            const text = canvas[y][x] || canvasYX;
+            const key = `${x}-${y}`;
+
+            tileArray.push(<Tile key={key} position={position} text={text} />);
+        }
     }
-  }
-  return tileArray;
+
+    return tileArray;
 }
 
-export default function Debugger() {
-  const tiles = getCanvasMap();
-  return <div>{tiles}</div>;
+function Debugger() {
+    const canvasContext = useContext(CanvasContext);
+    const tiles = getCanvasMap(canvasContext.canvas);
+    return <div>{tiles}</div>;
 }
+
+export default Debugger;
