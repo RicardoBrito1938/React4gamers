@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { TILE_SIZE } from "../../settings/constants";
 
 import "./index.css";
+import { ChestsContext } from "../../context/chests";
 
 // const moviment = {
 //   position: { x: 5, y: 5 },
@@ -13,6 +14,17 @@ interface IProps {
 }
 
 const Chest = (props: IProps) => {
+    const chestsContexts = useContext(ChestsContext);
+
+    const shouldAnimate = chestsContexts.openedChests.positions.find(
+        (position) => {
+            const match =
+                props.initialPosition.y === position.y &&
+                props.initialPosition.x === position.x;
+
+            return match;
+        }
+    );
     return (
         <div
             style={{
@@ -23,7 +35,9 @@ const Chest = (props: IProps) => {
                 height: 100,
                 backgroundImage: "url(./assets/CHEST.png)",
                 backgroundRepeat: "no-repeat",
-                animation: "chest-animation 1s steps(3) infinite",
+                backgroundPosition: "0px 0px",
+                animation:
+                    shouldAnimate && "chest-animation 1s steps(2) forwards",
             }}
         />
     );

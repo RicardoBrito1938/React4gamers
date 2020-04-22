@@ -23,6 +23,11 @@ function useEnemyMoviment(initialPosition) {
             updateDirectionState(randomDirection);
             updatePositionState(nextPosition);
         }
+
+        if (nextMove.dead) {
+            alert("morreu");
+            window.location.reload();
+        }
     }, 2000);
 
     return {

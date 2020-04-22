@@ -8,7 +8,7 @@ export default function Game() {
     return (
         <CanvasProvider>
             <ChestsProvider>
-                <Debugger />
+                {/*<Debugger />*/}
                 <Board />
             </ChestsProvider>
         </CanvasProvider>
